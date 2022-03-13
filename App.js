@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { StyleSheet, SafeAreaView, Text, View, Button, TextInput, FlatList, Alert, Image } from "react-native";
+import { useState } from "react";
+import { StyleSheet, SafeAreaView, Text, View, Button } from "react-native";
 import * as Contacts from 'expo-contacts';
 
 export default function App() {
