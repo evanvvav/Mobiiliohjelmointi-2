@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Mobiiliohjelmointi2.0",
-    "slug": "Mobiiliohjelmointi2.0",
+    "name": " Tehtävä 13 (Kontakti)",
+    "slug": "tehtava-13-(kontakti)",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,6 +27,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "description": ""
   }
 }

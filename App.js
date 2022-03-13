@@ -1,64 +1,50 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, SafeAreaView, Button, TextInput, FlatList, View} from 'react-native';
-import * as SQLite from'expo-sqlite';
+import { StyleSheet, SafeAreaView, Text, View, Button, TextInput, FlatList, Alert, Image } from "react-native";
+import * as Contacts from 'expo-contacts';
 
 export default function App() {
 
-const [amount, setAmount] = useState('');
-const [product, setProduct] = useState('');
-const [cart, setCart] = useState([]);
+const [contacts, setContacts] = useState([]);
+const [currentContact, setCurrentContact] = useState({});
 
-const db = SQLite.openDatabase('cartdb.db');
+const getContacts = async () => {
+  const { status } = await Contacts.requestPermissionsAsync();
+  if (status === 'granted') {
+    const { data } = await Contacts.getContactsAsync(
+      { fields: [Contacts.Fields.PhoneNumbers] }
+      );
 
-useEffect(() => {
-  db.transaction(tx => {
-    tx.executeSql('create table if not exists cart (id integer primary key not null, amount text, product text);');
-    }, null, updateList);
-    }, []);
-
-const saveItem = () => {
-  db.transaction(tx => {
-     tx.executeSql('insert into cart (amount, product) values (?, ?);',
-      [amount, product]);
-    }, null, updateList);
+      setContacts(data);
+      if (data.length > 0) {
+        setCurrentContact(data[0]);
+        console.log(data[0]);
+        
+      }
     }
+  }
 
-const updateList = () => {
-  db.transaction(tx => {
-    tx.executeSql('select * from cart;', [], (_, { rows }) => setCart(rows._array)); 
-    }, null, null);
-    }
+return (
+  <SafeAreaView style={styles.main}>
+    <FlatList 
+            data={contacts}
+            renderItem={({ item }) => (
+              <View>
+                <Text>{item.name}</Text>
+                <Text>{item.phoneNumbers &&
+                        item.phoneNumbers[0] &&
+                        item.phoneNumbers[0].number}</Text>
 
-const deleteItem = (id) => {
-  db.transaction( tx => {
-    tx.executeSql('delete from cart where id = ?;',[id]);
-    }, null, updateList);
-    }
+              </View>
+              )}
+              keyExtractor={(item) => item.id}/>
 
+    
+    <Button title="Get Contact" onPress = { getContacts } />
 
-  return (
-    <SafeAreaView style={styles.main}>
-      <Text>Shopping list</Text>
-    <TextInput style={styles.input}
-      placehoolder='Product'
-      onChangeText={product => setProduct(product)}
-      value={product}/>
-    <TextInput style={styles.input}
-      placehoolder='Amount'
-      onChangeText={amount => setAmount(amount)}
-      value={amount}/>
-    <Button onPress={saveItem} title='Save'/>
-    <FlatList
-      style={{marginLeft: '5%'}}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) =>
-        <View>
-          <Text>{item.product},{item.amount}</Text>
-          <Text style={{color: '#0000ff'}} onPress={() => deleteItem(item.id)}>bought</Text>
-        </View>}
-      data={cart}/>
-    </SafeAreaView>
-  );
+  </SafeAreaView>
+
+);
+
 }
 
 const styles = StyleSheet.create({
