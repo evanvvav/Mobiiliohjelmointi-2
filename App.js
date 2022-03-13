@@ -1,46 +1,22 @@
 import { useState } from "react";
-import { StyleSheet, SafeAreaView, Text, View, Button } from "react-native";
-import * as Contacts from 'expo-contacts';
+import { StyleSheet, SafeAreaView, TextInput, View, Button } from "react-native";
+import * as Speech from 'expo-speech';
 
 export default function App() {
 
-const [contacts, setContacts] = useState([]);
-const [currentContact, setCurrentContact] = useState({});
-
-const getContacts = async () => {
-  const { status } = await Contacts.requestPermissionsAsync();
-  if (status === 'granted') {
-    const { data } = await Contacts.getContactsAsync(
-      { fields: [Contacts.Fields.PhoneNumbers] }
-      );
-
-      setContacts(data);
-      if (data.length > 0) {
-        setCurrentContact(data[0]);
-        console.log(data[0]);
-        
-      }
-    }
-  }
+  const [thingToSay, setThingToSay] = useState('');
+  
+  const speak = () => {
+    Speech.speak(thingToSay);
+  };
 
 return (
   <SafeAreaView style={styles.main}>
-    <FlatList 
-            data={contacts}
-            renderItem={({ item }) => (
-              <View>
-                <Text>{item.name}</Text>
-                <Text>{item.phoneNumbers &&
-                        item.phoneNumbers[0] &&
-                        item.phoneNumbers[0].number}</Text>
-
-              </View>
-              )}
-              keyExtractor={(item) => item.id}/>
-
-    
-    <Button title="Get Contact" onPress = { getContacts } />
-
+    <TextInput style={styles.input}
+      placehoolder='Press to hear some words'
+      onChangeText={thingToSay => setThingToSay(thingToSay)}
+      value={thingToSay}/>
+    <Button title="PRESS TO HEAR TEXT" onPress={speak}/>
   </SafeAreaView>
 
 );
@@ -62,7 +38,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    width: 300,
+    width: 160,
     height: 30,
     margin: 1,
     backgroundColor: 'white',
