@@ -1,84 +1,62 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, SafeAreaView, Button, TextInput, FlatList, View} from 'react-native';
-import * as SQLite from'expo-sqlite';
+import { StyleSheet, SafeAreaView, Text, View, Button, FlatList, Image } from "react-native";
 
-export default function App() {
+export default function getRavintolatData() {
 
-const [amount, setAmount] = useState('');
-const [product, setProduct] = useState('');
-const [cart, setCart] = useState([]);
-
-const db = SQLite.openDatabase('cartdb.db');
+const [ravintolat, setRavintolat] = useState([]);
 
 useEffect(() => {
-  db.transaction(tx => {
-    tx.executeSql('create table if not exists cart (id integer primary key not null, amount text, product text);');
-    }, null, updateList);
-    }, []);
 
-const saveItem = () => {
-  db.transaction(tx => {
-     tx.executeSql('insert into cart (amount, product) values (?, ?);',
-      [amount, product]);
-    }, null, updateList);
-    }
+fetch("https://travel-advisor.p.rapidapi.com/restaurants/list-by-latlng?latitude=60.183832598&longitude=24.942829562&limit=10&currency=USD&distance=2&open_now=false&lunit=km&lang=en_US", {
+	"method": "GET",
+	"headers": {
+		"x-rapidapi-host": "travel-advisor.p.rapidapi.com",
+		"x-rapidapi-key": "25a22228abmshe90e31e943b8facp153abfjsn326786a3036f"
+	}
+})
 
-const updateList = () => {
-  db.transaction(tx => {
-    tx.executeSql('select * from cart;', [], (_, { rows }) => setCart(rows._array)); 
-    }, null, null);
-    }
-
-const deleteItem = (id) => {
-  db.transaction( tx => {
-    tx.executeSql('delete from cart where id = ?;',[id]);
-    }, null, updateList);
-    }
+.then(response => response.json())
+.then(data => setRavintolat(data.data)) 
+.catch(err => {
+	console.error(err);
+ });
+      }, []);
 
 
-  return (
-    <SafeAreaView style={styles.main}>
-      <Text>Shopping list</Text>
-    <TextInput style={styles.input}
-      placehoolder='Product'
-      onChangeText={product => setProduct(product)}
-      value={product}/>
-    <TextInput style={styles.input}
-      placehoolder='Amount'
-      onChangeText={amount => setAmount(amount)}
-      value={amount}/>
-    <Button onPress={saveItem} title='Save'/>
-    <FlatList
-      style={{marginLeft: '5%'}}
-      keyExtractor={item => item.id.toString()}
-      renderItem={({item}) =>
+return (
+ <SafeAreaView>
+   <FlatList 
+      keyExtractor={(item, index) => index.toString()}
+      data={ravintolat}
+      renderItem={({ item }) => (
         <View>
-          <Text>{item.product},{item.amount}</Text>
-          <Text style={{color: '#0000ff'}} onPress={() => deleteItem(item.id)}>bought</Text>
-        </View>}
-      data={cart}/>
-    </SafeAreaView>
-  );
-}
+          <Text>{item.name}</Text>
 
-const styles = StyleSheet.create({
-  main: {
-    paddingTop: 100,
-    flex: 1,
-    alignItems: 'center',
-    backgroundColor: 'white',
-  },
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  input: {
-    borderBottomWidth: 1,
-    width: 300,
-    height: 30,
-    margin: 1,
-    backgroundColor: 'white',
-  },
-});
+          <Text>{item.address}</Text>
+
+          <Text>{item.address_obj &&
+          item.address_obj.street1}</Text>
+
+          <Text>{item.photo && 
+          item.photo.id}</Text>
+
+          <Text>{item.photo && 
+          item.photo.images.original.url}</Text>
+
+          <Image source={{uri: item.photo && 
+          item.photo.images.original.url}}
+          style={{width:200, height: 200}} />
+
+          <Text>
+            
+          </Text>
+
+        </View>
+       )}
+      />
+
+
+ </SafeAreaView>
+);
+
+}
