@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": " Tehtävä 13 (Kontakti)",
-    "slug": "tehtava-13-(kontakti)",
+    "name": "tehtava-13",
+    "slug": "tehtava-13",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
