@@ -1,58 +1,46 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, SafeAreaView, Text, View, Button, FlatList, TextInput} from "react-native";
+import { StyleSheet, SafeAreaView, Text, View, Button,} from "react-native";
+import { FlatList, TextInput } from "react-native-web";
+
 
 export default function App() {
 
-  const [result, setResult] = useState(null);
-  const [number1, setNumber1] = useState('');
-  const [number2, setNumber2] = useState('');
+    const [text, setText] = useState('');
+    const [data, setData] = useState([]);
 
-  const [history, setHistory] = useState([])
 
-  const handlePlus = () => {
-    setResult(parseInt(number1) + parseInt(number2));
-    setHistory((list) => {
-      return [
-        {text: number1 + ' + ' + number2 + ' = ' + (parseInt(number1) + parseInt(number2)) },
-        ...list
-      ]
-       
-    });
-  }
+    const handlePressed = () => {
+      setData([...data, {key: text}]);
+      setText('');
+      console.log(data);
+    }
 
-  const handleMinus = () => {
-    setResult(parseInt(number1) - parseInt(number2));
-    setHistory((list) => {
-      return [
-        {text: number1 + ' - ' + number2 + ' = ' + (parseInt(number1) - parseInt(number2)) },
-        ...list
-      ]
-       
-    });
-  }
+    const hanldeDelete = () => {
+      setData([]);
+    }
+  
 
    return (
-    <SafeAreaView style={styles.main}>
-      <Text style={styles.text}>Result: {result}</Text>
-      <TextInput style={styles.input} keyboardType="numeric" 
-      value={number1} onChangeText={(value) => setNumber1(value)}/>
-      <TextInput style={styles.input} keyboardType="numeric" 
-      value={number2} onChangeText={(value) => setNumber2(value)}/>
-    <View style={styles.buttons}>
-      <View style={styles.button}>
-        <Button title="+" onPress={() => handlePlus()}/>
+    <SafeAreaView style={styles.main}>  
+      <TextInput style={styles.input} placeholder="shopping list..."
+      value={text} onChangeText={(text) => setText(text)}/>
+
+        <View style={styles.buttons}>
+     <View style={styles.button}>
+        <Button title="ADD" onPress={() => handlePressed()}/>
       </View>
       <View style={styles.button}>
-        <Button title="-" onPress={() => handleMinus()}/>
+        <Button title="CLEAR" onPress={() => hanldeDelete()}/>
       </View>
-    </View>
-    <Text style={styles.text}>History</Text>
-    <View>
-      <FlatList data={history} renderItem={({ item }) => (
-        <Text style={styles.text}>{item.text}</Text>
-      )}/>
     </View>
 
+    <FlatList 
+      data={data}
+      renderItem={({item}) => <Text >{item.key}</Text>}
+
+      keyExtractor={(item, index) => index.toString()}
+    />
+      
     </SafeAreaView>
   );
 }
@@ -60,27 +48,29 @@ export default function App() {
 const styles = StyleSheet.create({
   main: {
     flex: 1,
-    justifyContent: 'center',
+    paddingTop: 70,
     alignItems: 'center',
-    backgroundColor: 'silver',
+    backgroundColor: 'white',
   },
   text: {
     fontSize: 18,
   },
   input: {
-    borderWidth: 1,
-    width: 160,
+    borderBottomWidth: 1,
+    width: 200,
     height: 30,
     margin: 1,
     backgroundColor: 'white',
+    padding: 10,
   },
   buttons: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     width: '40%',
     margin: 4,
+    paddingTop: 10,
   },
   button: {
-    width: 57,
+    width: 65,
   },
 });
