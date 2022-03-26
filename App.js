@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
-import { StyleSheet, Text, SafeAreaView, Button, TextInput, FlatList, View} from 'react-native';
+import { StyleSheet, Text, SafeAreaView, TextInput, FlatList, View} from 'react-native';
 import * as SQLite from'expo-sqlite';
+import { Header, Icon, Input, Button, ListItem } from'react-native-elements';
+
 
 export default function App() {
 
@@ -37,25 +39,36 @@ const deleteItem = (id) => {
 
 
   return (
-    <SafeAreaView style={styles.main}>
-      <Text>Shopping list</Text>
-    <TextInput style={styles.input}
-      placehoolder='Product'
+    <SafeAreaView>
+
+    <Header centerComponent={{ text: 'SHOPPING LIST', style: { color: '#fff' } }}/>
+  
+    <Input 
+      placeholder='Product' label='PRODUCT'
       onChangeText={product => setProduct(product)}
       value={product}/>
-    <TextInput style={styles.input}
-      placehoolder='Amount'
+    <Input
+      placeholder='Amount' label='AMOUNT'
       onChangeText={amount => setAmount(amount)}
       value={amount}/>
-    <Button onPress={saveItem} title='Save'/>
+
+    <Button raised icon={{name: 'save'}} onPress={saveItem} title='SAVE'/>
+
     <FlatList
-      style={{marginLeft: '5%'}}
+      
       keyExtractor={item => item.id.toString()}
       renderItem={({item}) =>
-        <View>
-          <Text>{item.product},{item.amount}</Text>
-          <Text style={{color: '#0000ff'}} onPress={() => deleteItem(item.id)}>bought</Text>
-        </View>}
+        <ListItem bottomDivider>
+          <ListItem.Content>
+            <View style={{flexDirection: 'row'}}>
+            <View>
+            <ListItem.Title>{item.product}</ListItem.Title>
+            <ListItem.Subtitle>{item.amount}</ListItem.Subtitle>      
+            </View>
+            <Icon type="material" color='#FF0000' name="delete" onPress={() => deleteItem(item.id)} />
+            </View>
+          </ListItem.Content>
+        </ListItem>}
       data={cart}/>
     </SafeAreaView>
   );
